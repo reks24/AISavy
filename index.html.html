@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sprint Zero: How AI-savvy is your PM game?</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9eef4;--ink:#14233b;--mute:#5a6a82;--card:#fff;--line:#c9d3e0;--per:#0f9b8e;--prj:#6b4ee6;--gold:#f2b134;--bad:#d9455f;--ok:#1f9d63;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a2e;--ink:#e8eefb;--mute:#93a3bf;--card:#18274a;--line:#2b3d66}}
+:root[data-theme="dark"]{--bg:#0f1a2e;--ink:#e8eefb;--mute:#93a3bf;--card:#18274a;--line:#2b3d66}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:clamp(2.2rem,8vw,3.8rem);line-height:1;margin:.2em 0 .3em;font-weight:800;letter-spacing:-.03em}
+h2{font-size:1.35rem;line-height:1.25;margin:0 0 14px;font-weight:600}
+p{line-height:1.55;margin:0 0 12px}
+.mute{color:var(--mute)}
+.btn{font:inherit;font-weight:600;border:0;border-radius:12px;padding:14px 22px;background:var(--ink);color:var(--bg);cursor:pointer;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn:focus-visible,.opt:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.track{display:flex;gap:12px;margin:22px 0}
+.track div{flex:1;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px}
+.track b{display:block;margin-bottom:4px}
+.t-per{border-color:var(--per)!important}.t-prj{border-color:var(--prj)!important}
+.hud{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.ring{position:relative;width:64px;height:64px;flex:none}
+.ring svg{width:64px;height:64px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.ring .bgc{stroke:var(--line)}
+.ring .fg{transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:.95rem}
+.ring small{position:absolute;left:0;right:0;bottom:-16px;text-align:center;font-size:.65rem;color:var(--mute)}
+.hud .mid{flex:1;text-align:center}
+.streak{font-weight:800;min-height:1.5em}
+.streak.pop{animation:pop .5s}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.timer{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin:24px 0 16px}
+.timer i{display:block;height:100%;width:100%;background:var(--gold);transform-origin:left;transition:background .3s}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:22px;position:relative}
+.card.per{border-top:8px solid var(--per)}.card.prj{border-top:8px solid var(--prj)}
+.card.enter{animation:slide .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes slide{from{opacity:0;transform:translateX(60px) rotate(2deg)}to{opacity:1;transform:none}}
+.tag{font-size:.8rem;font-weight:600;margin-bottom:8px}
+.per .tag{color:var(--per)}.prj .tag{color:var(--prj)}
+.opt{display:block;width:100%;text-align:left;font:inherit;background:transparent;color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:13px 14px;margin:9px 0;cursor:pointer;transition:transform .15s,border-color .15s,background .2s}
+.opt:hover:not(:disabled){transform:translateX(5px);border-color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt .pts{float:right;font-weight:800;margin-left:10px}
+.opt.s3{background:color-mix(in srgb,var(--ok) 20%,transparent);border-color:var(--ok)}
+.opt.s2{background:color-mix(in srgb,var(--gold) 25%,transparent);border-color:var(--gold)}
+.opt.s1,.opt.s0{border-color:var(--line);opacity:.8}
+.opt.chosen{opacity:1;outline:3px solid var(--ink)}
+.opt.chosen.s0,.opt.chosen.s1{background:color-mix(in srgb,var(--bad) 18%,transparent);border-color:var(--bad)}
+.opt.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.why{margin-top:14px;padding:14px;border-radius:12px;background:var(--bg);animation:slide .4s}
+.float{position:fixed;font-weight:800;font-size:2rem;pointer-events:none;z-index:9;animation:up 1.1s forwards}
+@keyframes up{to{transform:translateY(-90px);opacity:0}}
+.bars{margin:20px 0}
+.bar{margin:14px 0}.bar .lab{display:flex;justify-content:space-between;font-weight:600;margin-bottom:6px}
+.bar .tr{height:16px;background:var(--line);border-radius:10px;overflow:hidden}
+.bar .tr i{display:block;height:100%;width:0;border-radius:10px;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.badge{font-size:clamp(1.8rem,7vw,2.8rem);font-weight:800;letter-spacing:-.02em;margin:6px 0 10px;animation:pop .8s}
+#conf{position:fixed;inset:0;pointer-events:none;z-index:8}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+@media (max-width:520px){.track{flex-direction:column}.card{padding:16px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<canvas id="conf" aria-hidden="true"></canvas>
+<main id="app"></main>
+
+<script>
+const PER_COLOR="#0f9b8e",PRJ_COLOR="#6b4ee6",TIME=25;
+const Q=[
+{k:"per",t:"Contract crunch",q:"A 40-page vendor contract lands 30 minutes before your steering meeting. You need the gist and the risks.",o:[
+["Paste the full contract into a free public chatbot",0],["Skim it by hand and hope for the best",1],["Summarize with your company-approved AI tool, then check key clauses against the source",3],["Get an AI summary and forward it to the team as is",1]],
+w:"Approved tools protect confidential data, and AI summaries can miss or invent clauses. Speed from AI, accountability from you."},
+{k:"per",t:"Bland status report",q:"You ask AI for this week's status report and get something generic that sounds like nobody on your team.",o:[
+["Accept it. Close enough",1],["Re-prompt with the audience, desired format and last week's report as an example",3],["Hit regenerate five times with the same prompt",1],["Give up and write it from scratch",1]],
+w:"Better output comes from better context: audience, purpose, format, example. Regenerating the same prompt is a slot machine."},
+{k:"per",t:"The confident statistic",q:"Your AI-drafted deck says \"78% of transformation projects fail without X\". It sounds right.",o:[
+["Keep it. It sounds plausible","0"],["Ask the AI \"are you sure?\" and keep it if it says yes",1],["Trace the claim to a real source, or remove it",3],["Delete every number in the deck",1]],
+w:"Models can produce fluent, fake statistics. Asking the same model to confirm itself is not verification."},
+{k:"per",t:"Weekly grind",q:"Every Friday you gather updates and draft the RAID log. It takes 90 minutes. Again.",o:[
+["Keep doing it manually. It's the process",0],["Build a reusable prompt template and a checklist, then refine it each week",3],["Open a fresh chat each time and improvise",2],["Delegate it to the newest team member",1]],
+w:"Repeatable work deserves a reusable workflow. Templates compound, improvised prompts reset to zero."},
+{k:"per",t:"Meeting notes",q:"You want AI to capture the kickoff meeting with 14 people, including two external partners.",o:[
+["Run a personal, unapproved recording app quietly",0],["Use an approved note-taker, tell everyone, then review actions and owners yourself",3],["Ban recording. Take notes by hand",1],["Use AI notes and send them out unreviewed",1]],
+w:"Consent, approved tooling and human review of actions and owners. AI drafts the notes, you own them."},
+{k:"prj",t:"The 6-week chatbot",q:"A director says: \"We need an AI chatbot for customers, live in six weeks.\"",o:[
+["Say yes and start building","0"],["Say no. Too risky",1],["Run quick discovery: problem, data, risks, success metric, then size the scope",3],["Buy the shiniest vendor tool and figure out the use case later",1]],
+w:"AI projects fail from unclear problems far more than weak models. Discovery before commitment."},
+{k:"prj",t:"Messy data",q:"The data team reports that 40% of the records needed to train and test the solution are incomplete.",o:[
+["Tell them to build around it",1],["Make data readiness a tracked workstream and reset scope and timeline with stakeholders",3],["Launch anyway and add a warning label",1],["Hide it from the plan to protect the date",0]],
+w:"Data is the critical path in most AI work. Treat it as a deliverable, not a footnote."},
+{k:"prj",t:"The wow demo",q:"The pilot demo wows leadership. They want it in production on Monday.",o:[
+["Ship it. Momentum matters",0],["Define evaluation criteria, test on messy real cases, add human fallback, roll out in phases",3],["Delay until it's perfect, no date",1],["Ship to half of users with no monitoring",1]],
+w:"Demos use the happy path. Production needs evals, fallbacks, monitoring and phased rollout."},
+{k:"prj",t:"Proving value",q:"Six months in, the sponsor asks: \"Is the AI actually working?\" How do you answer?",o:[
+["Show the number of people who tried it",1],["Report model accuracy only",2],["Compare to the pre-project baseline on business outcomes, plus cost per task and error rate",3],["Share glowing quotes from the demo",0]],
+w:"Capture a baseline before launch. Tie measures to business outcomes, and count cost and errors, not just usage."},
+{k:"prj",t:"Rules of the road",q:"Teams across the company are launching AI features. One drafted a wrong refund promise to a customer.",o:[
+["Leave it to each team to sort out",0],["Ban AI until further notice",1],["Run one-off training and move on",2],["Set owners, risk tiers, human review for high-stakes use and an incident process",3]],
+w:"Good governance scales with risk: clear ownership, tiered review and a way to learn from incidents."}
+];
+const TIERS=[
+[0,.35,"AI Bystander","You're at the start of the curve. A few habits around verification, prompts and project framing will change your work quickly."],
+[.35,.6,"Curious Pilot","You see the potential and avoid the worst traps. Next: make your good habits repeatable and your AI projects measurable."],
+[.6,.85,"Prompt Practitioner","Solid instincts. You use AI well day to day and mostly frame AI projects sensibly. Sharpen the gaps below."],
+[.85,1.01,"AI-Savvy Navigator","You verify, systematize and govern. You'd be a great person to coach other project managers."]];
+const $=s=>document.querySelector(s),app=$("#app");
+let i,sc,streak,best,timer,t0,locked,order;
+
+/* background: drifting node network */
+const bg=$("#bg"),bx=bg.getContext("2d");let nodes=[];
+function sizeBg(){bg.width=innerWidth;bg.height=innerHeight;nodes=Array.from({length:Math.min(46,Math.floor(innerWidth/22))},()=>({x:Math.random()*bg.width,y:Math.random()*bg.height,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,c:Math.random()<.5?PER_COLOR:PRJ_COLOR}))}
+function drawBg(){bx.clearRect(0,0,bg.width,bg.height);bx.globalAlpha=.55;
+for(const a of nodes){a.x=(a.x+a.vx+bg.width)%bg.width;a.y=(a.y+a.vy+bg.height)%bg.height;
+for(const b of nodes){const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<120){bx.strokeStyle=a.c;bx.globalAlpha=(1-d/120)*.25;bx.beginPath();bx.moveTo(a.x,a.y);bx.lineTo(b.x,b.y);bx.stroke()}}
+bx.globalAlpha=.6;bx.fillStyle=a.c;bx.beginPath();bx.arc(a.x,a.y,2.5,0,7);bx.fill()}
+if(!matchMedia("(prefers-reduced-motion:reduce)").matches)requestAnimationFrame(drawBg)}
+addEventListener("resize",sizeBg);sizeBg();drawBg();
+
+function intro(){
+app.innerHTML=`<p class="mute" style="font-weight:600;margin-top:24px">A 5-minute game for project managers</p>
+<h1>Sprint Zero</h1>
+<p style="font-size:1.15rem;max-width:34em">Ten workplace moments. One timer. Pick the move a truly AI-savvy project manager would make, and see how you score at using AI yourself and at leading AI projects.</p>
+<div class="track"><div class="t-per"><b style="color:var(--per)">Track 1: Your own productivity</b>Prompts, verification, workflows, data safety.</div>
+<div class="t-prj"><b style="color:var(--prj)">Track 2: Managing AI projects</b>Scope, data, evaluation, value, governance.</div></div>
+<p class="mute">Each answer scores 0 to 3 points. You have ${TIME} seconds per scenario. Three-point answers in a row build a streak.</p>
+<button class="btn" id="go">Start the sprint</button>`;
+$("#go").onclick=start}
+
+function start(){i=0;sc={per:0,prj:0};streak=0;best=0;order=Q.map((_,n)=>n);
+/* alternate tracks so it feels varied */
+const p=order.filter(n=>Q[n].k=="per"),j=order.filter(n=>Q[n].k=="prj");order=[];for(let n=0;n<5;n++){order.push(p[n],j[n])}
+show()}
+
+function ring(id,color,label){return `<div class="ring"><svg viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="26"/><circle class="fg" id="r-${id}" cx="32" cy="32" r="26" stroke="${color}" stroke-dasharray="163.4" stroke-dashoffset="163.4"/></svg><span id="n-${id}">0</span><small>${label}</small></div>`}
+function updRings(){for(const k of ["per","prj"]){$("#r-"+k).style.strokeDashoffset=163.4*(1-sc[k]/15);$("#n-"+k).textContent=sc[k]}}
+
+function show(){
+const q=Q[order[i]];locked=false;
+const opts=q.o.map(([t,s],n)=>({t,s:+s,n})).sort(()=>Math.random()-.5);
+app.innerHTML=`<div class="hud">${ring("per",PER_COLOR,"You")}<div class="mid"><div class="mute" style="font-weight:600">Scenario ${i+1} of 10</div><div class="streak" id="st">${streak>1?"🔥 "+streak+" streak":""}</div></div>${ring("prj",PRJ_COLOR,"Projects")}</div>
+<div class="timer"><i id="tm"></i></div>
+<div class="card ${q.k} enter"><div class="tag">${q.k=="per"?"Your productivity":"Managing AI projects"}: ${q.t}</div>
+<h2>${q.q}</h2><div id="opts">${opts.map((o,n)=>`<button class="opt" data-n="${n}"><span>${o.t}</span></button>`).join("")}</div><div id="fb"></div></div>`;
+updRings();
+document.querySelectorAll(".opt").forEach(b=>b.onclick=e=>answer(opts,+b.dataset.n,q,e));
+t0=performance.now();const bar=$("#tm");
+clearInterval(timer);timer=setInterval(()=>{const f=Math.max(0,1-(performance.now()-t0)/(TIME*1000));bar.style.transform=`scaleX(${f})`;bar.style.background=f<.25?"var(--bad)":"var(--gold)";if(f<=0){clearInterval(timer);answer(opts,-1,q)}},50)}
+
+function answer(opts,n,q,e){
+if(locked)return;locked=true;clearInterval(timer);
+const o=opts[n]||null,s=o?o.s:0;sc[q.k]+=s;
+if(s==3){streak++;best=Math.max(best,streak)}else streak=0;
+document.querySelectorAll(".opt").forEach((b,m)=>{b.disabled=true;b.classList.add("s"+opts[m].s);b.innerHTML+=`<span class="pts">+${opts[m].s}</span>`;if(m===n){b.classList.add("chosen");if(s<2)b.classList.add("shake")}});
+updRings();
+const st=$("#st");st.textContent=streak>1?"🔥 "+streak+" streak":"";st.classList.remove("pop");void st.offsetWidth;st.classList.add("pop");
+if(e)floatPts(e.clientX,e.clientY,s);if(s==3)burst(e?e.clientX:innerWidth/2,e?e.clientY:innerHeight/2,18);
+const msg=!o?"Time's up. ":s==3?"Best move. ":s==2?"Decent, not best. ":"Risky choice. ";
+$("#fb").innerHTML=`<div class="why"><p><b>${msg}</b>${q.w}</p><button class="btn" id="nx">${i==9?"See my results":"Next scenario"}</button></div>`;
+$("#nx").onclick=()=>{i++;i<10?show():result()};$("#nx").focus()}
+
+function floatPts(x,y,s){const d=document.createElement("div");d.className="float";d.textContent=s?"+"+s:"0";d.style.cssText+=`left:${x-10}px;top:${y-30}px;color:${s==3?"var(--ok)":s==2?"var(--gold)":"var(--bad)"}`;document.body.appendChild(d);setTimeout(()=>d.remove(),1100)}
+
+/* confetti / particles */
+const cv=$("#conf"),cx=cv.getContext("2d");let ps=[],run=false;
+function sizeC(){cv.width=innerWidth;cv.height=innerHeight}addEventListener("resize",sizeC);sizeC();
+function burst(x,y,n){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+for(let k=0;k<n;k++){const a=Math.random()*6.28,v=2+Math.random()*5;ps.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,l:60+Math.random()*30,c:["#0f9b8e","#6b4ee6","#f2b134","#d9455f"][k%4],s:4+Math.random()*5})}
+if(!run){run=true;loop()}}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);ps=ps.filter(p=>p.l>0);
+for(const p of ps){p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.l--;cx.globalAlpha=Math.min(1,p.l/30);cx.fillStyle=p.c;cx.fillRect(p.x,p.y,p.s,p.s)}
+if(ps.length)requestAnimationFrame(loop);else run=false}
+
+function result(){
+const tot=sc.per+sc.prj,pct=tot/30,tier=TIERS.find(t=>pct>=t[0]&&pct<t[1]);
+const gap=sc.per-sc.prj,note=Math.abs(gap)<=2?"Your two tracks are balanced, so keep growing both.":gap>0?"You're stronger at using AI yourself than at leading AI projects. Practise discovery, evaluation and governance next.":"You manage AI projects better than you use AI day to day. Build a few personal prompt templates and verification habits.";
+const tips={per:["Give context: audience, format and an example.","Verify facts and numbers before they reach a slide.","Turn repeat tasks into reusable templates.","Use approved tools for anything confidential."],prj:["Start with the problem and success metric, not the tool.","Track data readiness as a deliverable.","Test with messy cases and plan a human fallback.","Set owners, risk tiers and an incident process."]};
+const weak=sc.per<=sc.prj?"per":"prj";
+app.innerHTML=`<p class="mute" style="font-weight:600;margin-top:24px">Your result: ${tot} of 30 points${best>1?", best streak "+best:""}</p>
+<div class="badge" id="bd">${tier[2]}</div><p style="font-size:1.1rem">${tier[3]}</p>
+<div class="bars"><div class="bar"><div class="lab"><span style="color:var(--per)">Your productivity</span><span>${sc.per}/15</span></div><div class="tr"><i data-w="${sc.per/15*100}" style="background:var(--per)"></i></div></div>
+<div class="bar"><div class="lab"><span style="color:var(--prj)">Managing AI projects</span><span>${sc.prj}/15</span></div><div class="tr"><i data-w="${sc.prj/15*100}" style="background:var(--prj)"></i></div></div></div>
+<p>${note}</p>
+<div class="card ${weak}"><div class="tag">Focus next: ${weak=="per"?"your own productivity":"managing AI projects"}</div><ul style="margin:0;padding-left:20px;line-height:1.7">${tips[weak].map(t=>`<li>${t}</li>`).join("")}</ul></div>
+<div class="row"><button class="btn" id="again">Play again</button></div>`;
+$("#again").onclick=intro;
+setTimeout(()=>document.querySelectorAll(".bar i").forEach(b=>b.style.width=b.dataset.w+"%"),150);
+if(pct>=.6){for(let k=0;k<6;k++)setTimeout(()=>burst(innerWidth*(.15+Math.random()*.7),innerHeight*.3,30),k*250)}}
+intro();
+</script>
+</body>
+</html>
